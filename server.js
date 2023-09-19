@@ -1,7 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import Cors from 'cors'
-import ArrayofForms from './formModels.js';
+import Cors from 'cors';
+import ArrayOfForms from './formModels.js';
 
 //App config
 const app = express();
@@ -11,6 +11,29 @@ const connection_url = 'mongodb+srv://our-first-user:muY2VV2o8x48lML3@ranavijayc
 //Middlewares
 app.use(express.json());
 app.use(Cors());
+
+function createArrayOfFormsFromJson(jsonData) {
+  const arrayOfFormsData = {
+    form: [],
+  };
+
+  for (const key in jsonData) {
+    if (jsonData.hasOwnProperty(key)) {
+      const item = jsonData[key];
+
+      const formModelData = {
+        id: item.id,
+        type: item.type,
+        question: item.question,
+        ans: item.ans,
+        inputValues: item.inputValues || [],
+      };
+      arrayOfFormsData.form.push(formModelData);
+    }
+  }
+
+  return new ArrayOfForms(arrayOfFormsData);
+}
 
 mongoose.connect(connection_url, {
     useNewUrlParser: true,
@@ -26,10 +49,10 @@ app.use(express.json());
 // Route to receive JSON data and store it in MongoDB
 app.post('/createForm', async (req, res) => {
   try {
-    const {  } = req.body; // Assuming your JSON data has "name" and "age" fields
+    const receivedData = createArrayOfFormsFromJson(req.body); 
     
     // Create a new document in MongoDB
-    const newData = new DataModel({ name, age });
+    const newData = new ArrayOfForms(receivedData);
     await newData.save();
 
     res.status(201).json({ message: 'Data saved successfully' });
