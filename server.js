@@ -1,7 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import Cors from 'cors'
-import formModels from './formModels.js';
+import ArrayofForms from './formModels.js';
 
 //App config
 const app = express();
