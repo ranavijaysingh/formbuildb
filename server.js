@@ -46,6 +46,19 @@ app.get('/',(req,res) =>{
 
 app.use(express.json());
 
+app.get('/forms', async (req, res) => {
+  try {
+    const ArrayOfFormsDB = await ArrayOfForms.find({});
+    res.status(200).send(ArrayOfFormsDB)
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500).send("NO CARDS FOUND");
+  }
+})
+
+
+
 // Route to receive JSON data and store it in MongoDB
 app.post('/createForm', async (req, res) => {
   try {
@@ -53,9 +66,9 @@ app.post('/createForm', async (req, res) => {
     
     // Create a new document in MongoDB
     const newData = new ArrayOfForms(receivedData);
-    await newData.save();
+    const savedData = await newData.save();
 
-    res.status(201).json({ message: 'Data saved successfully' });
+    res.status(201).send(savedData._id);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
