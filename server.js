@@ -41,7 +41,7 @@ mongoose.connect(connection_url, {
 })
 
 app.get('/',(req,res) =>{
-    res.status(200).send("HELLO ME!!! YOU ARE DOING GOOD")
+    res.status(200).send("HELLO ME!!! ")
 })
 
 app.use(express.json());
@@ -57,7 +57,14 @@ app.get('/forms', async (req, res) => {
   }
 })
 
-
+app.get('/forms/:id', async (req, res) => {
+  try{
+    const result = await ArrayOfForms.findById(req.params.id);
+    res.status(200).send(result);
+  }catch(error){
+    res.status(200).send("No form with this ID is found");
+  }
+})
 
 // Route to receive JSON data and store it in MongoDB
 app.post('/createForm', async (req, res) => {
@@ -75,5 +82,18 @@ app.post('/createForm', async (req, res) => {
   }
 });
 
+
+
+app.get('/deleteAll', async (req, res) =>{
+  try{
+    const result = await ArrayOfForms.deleteMany({})
+    console.log('Deleted', result.deletedCount, 'documents');
+    res.status(200).send({ message: `Deleted ${result.deletedCount} documents` });
+  }catch(error){
+    console.error('Error deleting documents:', error);
+    res.status(500).json({ error: 'An error occurred while deleting documents' });
+  }
+})
+
 app.listen(port, () => 
-console.log(`listenong on localhost: ${port}`));
+console.log(`listening on localhost: ${port}`));
