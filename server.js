@@ -27,6 +27,7 @@ function createArrayOfFormsFromJson(jsonData) {
         question: item.question,
         ans: item.ans,
         inputValues: item.inputValues || [],
+        datetime: item.datetime || null
       };
       arrayOfFormsData.form.push(formModelData);
     }
