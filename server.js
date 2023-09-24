@@ -27,6 +27,7 @@ function createArrayOfFormsFromJson(jsonData) {
         question: item.question,
         ans: item.ans,
         inputValues: item.inputValues || [],
+        datetime: item.datetime || null
       };
       arrayOfFormsData.form.push(formModelData);
     }
@@ -66,6 +67,16 @@ app.get('/forms/:id', async (req, res) => {
   }
 })
 
+app.post('/forms/:id', async (req, res) =>{
+  try{
+    const result = await ArrayOfForms.findByIdAndUpdate(req.params.id, {...req.body})
+    res.status(200).send("Data stored");
+  }catch(error)
+  {
+    console.log('error',error);
+    res.status(500).send('Error while Update')
+  }
+})
 // Route to receive JSON data and store it in MongoDB
 app.post('/createForm', async (req, res) => {
   try {
