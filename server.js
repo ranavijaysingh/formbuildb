@@ -67,6 +67,15 @@ app.get('/forms/:id', async (req, res) => {
   }
 })
 
+app.put('/forms/:id', async (req, res) => {
+  try{
+    const result = await ArrayOfForms.findById(req.params.id);
+    res.status(200).send(result);
+  }catch(error){
+    res.status(200).send("No form with this ID is found");
+  }
+})
+
 app.post('/forms/:id', async (req, res) =>{
   try{
     const result = await ArrayOfForms.findByIdAndUpdate(req.params.id, {...req.body})
