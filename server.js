@@ -2,8 +2,10 @@ import express from 'express';
 import mongoose from 'mongoose';
 import Cors from 'cors';
 import ArrayOfForms from './formModels.js';
+import dotenv from 'dotenv';
 
 //App config
+dotenv.config();
 const app = express();
 const port = process.env.PORT || 8000
 const connection_url = 'mongodb+srv://our-first-user:muY2VV2o8x48lML3@ranavijaycluster.58sli.mongodb.net/formdb?retryWrites=true&w=majority'
@@ -11,12 +13,19 @@ const connection_url = 'mongodb+srv://our-first-user:muY2VV2o8x48lML3@ranavijayc
 //Middlewares
 app.use(express.json());
 app.use(Cors());
+app.use(methodOverride("_method"));
 
+//db config
+mongoose.connect(connection_url, {
+  useNewUrlParser: true,
+  useUnifiedTopology:true
+})
+
+//Functions
 function createArrayOfFormsFromJson(jsonData) {
   const arrayOfFormsData = {
     form: [],
   };
-
   for (const key in jsonData) {
     if (jsonData.hasOwnProperty(key)) {
       const item = jsonData[key];
@@ -32,20 +41,15 @@ function createArrayOfFormsFromJson(jsonData) {
       arrayOfFormsData.form.push(formModelData);
     }
   }
-
   return new ArrayOfForms(arrayOfFormsData);
 }
 
-mongoose.connect(connection_url, {
-    useNewUrlParser: true,
-    useUnifiedTopology:true
-})
 
+//Routes
 app.get('/',(req,res) =>{
     res.status(200).send("HELLO ME!!! ")
 })
 
-app.use(express.json());
 
 app.get('/forms', async (req, res) => {
   try {
@@ -59,6 +63,15 @@ app.get('/forms', async (req, res) => {
 })
 
 app.get('/forms/:id', async (req, res) => {
+  try{
+    const result = await ArrayOfForms.findById(req.params.id);
+    res.status(200).send(result);
+  }catch(error){
+    res.status(200).send("No form with this ID is found");
+  }
+})
+
+app.put('/forms/:id', async (req, res) => {
   try{
     const result = await ArrayOfForms.findById(req.params.id);
     res.status(200).send(result);
@@ -106,5 +119,6 @@ app.get('/deleteAll', async (req, res) =>{
   }
 })
 
+//listener
 app.listen(port, () => 
 console.log(`listening on localhost: ${port}`));
